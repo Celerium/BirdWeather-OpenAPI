@@ -1,0 +1,2286 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "BirdWeather REST API",
+    "description": "Unofficial OpenAPI description generated from the [BirdWeather documentation](https://app.birdweather.com/api/v1). It is not published or endorsed by BirdWeather.\n\nThis is the documentation for V1 of the BirdWeather API.\n\n- **Production:** [https://app.birdweather.com/api/v1](https://app.birdweather.com/api/v1)\n\nPOST parameters can be passed either as a JSON object string `(application/json)` or as HTML encoded form parameters `(application/x-www-form-urlencoded)`. The examples below will use JSON.\n\nFor authenticated requests, the authentication token is passed as the `{token}` path segment. User endpoints additionally accept it as a JSON or form parameter `token`, or using the `Authorization` or `X-Auth-Token` header.\n\nAdministrators may instead authenticate with an administrator API token, obtained from the BirdWeather admin. This token is **only** read from the `Authorization` (as `Bearer <token>`) or `X-Auth-Token` header — never from the URL or a request parameter. When it is supplied, station endpoints accept a numeric **station id** in place of the station’s own token, and are not restricted to active stations. An administrator token grants full read and write access to every station, including destructive endpoints, so it should be treated as a password and regenerated in the admin if exposed.\n\nFor support, please contact [support@birdweather.com](mailto:support@birdweather.com).",
+    "version": "1.20261114",
+    "x-source-url": "https://app.birdweather.com/api/v1",
+    "contact": {
+      "name": "BirdWeather support",
+      "email": "support@birdweather.com"
+    }
+  },
+  "externalDocs": {
+    "description": "BirdWeather API documentation",
+    "url": "https://app.birdweather.com/api/v1"
+  },
+  "servers": [
+    {
+      "url": "https://app.birdweather.com/api/v1",
+      "description": "Production"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Station Stats"
+    },
+    {
+      "name": "Station Species"
+    },
+    {
+      "name": "Detections"
+    },
+    {
+      "name": "Soundscapes"
+    },
+    {
+      "name": "Species"
+    },
+    {
+      "name": "Station Configuration"
+    }
+  ],
+  "paths": {
+    "/stations/{token}/stats": {
+      "get": {
+        "tags": [
+          "Station Stats"
+        ],
+        "summary": "Fetch Stats",
+        "operationId": "fetchStats",
+        "externalDocs": {
+          "description": "BirdWeather documentation",
+          "url": "https://app.birdweather.com/api/v1#station-stats-station-stats-get"
+        },
+        "security": [
+          {},
+          {
+            "adminBearer": []
+          },
+          {
+            "adminToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "description": "Station authentication token",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "description": "The time period to filter detections [day / week / month / all] (default: day).",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "day",
+                "week",
+                "month",
+                "all"
+              ],
+              "default": "day"
+            },
+            "example": "week"
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "required": false,
+            "description": "Timestamp to filter detections from, in ISO8601 format. Overrides period if passed.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2023-06-18"
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "required": false,
+            "description": "Limit results to detections with the given soundscape mode [live / recorded / birdnetpi].",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "live",
+                "recorded",
+                "birdnetpi"
+              ]
+            },
+            "example": "live"
+          },
+          {
+            "name": "classification",
+            "in": "query",
+            "required": false,
+            "description": "Limit results to species with the given classification, or a comma-separated list of classifications (e.g. `bat,mammal`) [avian / amphibian / reptile / mammal / bat / insect].",
+            "schema": {
+              "type": "string"
+            },
+            "example": "avian"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "detections": {
+                      "type": "integer"
+                    },
+                    "species": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "detections": 12345,
+                  "species": 99
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stations/{token}/species": {
+      "get": {
+        "tags": [
+          "Station Species"
+        ],
+        "summary": "Top Species",
+        "operationId": "topSpecies",
+        "description": "Returns a list of species detected by the station, along with their detection counts.\n\nBy default it will return the top species by detection count, but can be reordered by species common or scientific name.",
+        "externalDocs": {
+          "description": "BirdWeather documentation",
+          "url": "https://app.birdweather.com/api/v1#station-species-station-species-get"
+        },
+        "security": [
+          {},
+          {
+            "adminBearer": []
+          },
+          {
+            "adminToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "description": "Station authentication token",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "description": "The time period to filter detections [day / week / month / all] (default: day).",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "day",
+                "week",
+                "month",
+                "all"
+              ],
+              "default": "day"
+            },
+            "example": "week"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "description": "Timestamp to filter detections from, in ISO8601 format. Overrides period if passed.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2023-06-18"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "description": "Timestamp to filter detections to, in ISO8601 format. Overrides period if passed.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2023-06-20"
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "required": false,
+            "description": "Alias for `from` parameter. Overrides period if passed.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2023-06-18"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "The maximum number of species to return (max 100, default: 100).",
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "maximum": 100
+            },
+            "example": 10
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "The page number of species to return (default: 1).",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "example": 2
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Alternative field to sort by [common_name / scientific_name / top] (default: top).",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "common_name",
+                "scientific_name",
+                "top"
+              ],
+              "default": "top"
+            },
+            "example": "common_name"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "description": "Sort order [asc / desc] (default: asc when sorting by name, otherwise desc).",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            },
+            "example": "desc"
+          },
+          {
+            "name": "speciesId",
+            "in": "query",
+            "required": false,
+            "description": "Limit results to the given species.",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 305
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "description": "Limit results to species that match the given query (will be ignored if speciesId is provided).",
+            "schema": {
+              "type": "string"
+            },
+            "example": "magpie"
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "required": false,
+            "description": "Limit results to detections with the given soundscape mode [live / recorded / birdnetpi].",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "live",
+                "recorded",
+                "birdnetpi"
+              ]
+            },
+            "example": "live"
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "description": "Language locale to use for search query.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "es"
+          },
+          {
+            "name": "classification",
+            "in": "query",
+            "required": false,
+            "description": "Limit results to species with the given classification, or a comma-separated list of classifications (e.g. `bat,mammal`) [avian / amphibian / reptile / mammal / bat / insect].",
+            "schema": {
+              "type": "string"
+            },
+            "example": "avian"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "species": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "commonName": {
+                            "type": "string"
+                          },
+                          "scientificName": {
+                            "type": "string"
+                          },
+                          "color": {
+                            "type": "string"
+                          },
+                          "classification": {
+                            "type": "string"
+                          },
+                          "imageUrl": {
+                            "type": "string"
+                          },
+                          "thumbnailUrl": {
+                            "type": "string"
+                          },
+                          "detections": {
+                            "type": "object",
+                            "properties": {
+                              "total": {
+                                "type": "integer"
+                              },
+                              "almostCertain": {
+                                "type": "integer"
+                              },
+                              "veryLikely": {
+                                "type": "integer"
+                              },
+                              "uncertain": {
+                                "type": "integer"
+                              },
+                              "unlikely": {
+                                "type": "integer"
+                              }
+                            }
+                          },
+                          "latestDetectionAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "species": [
+                    {
+                      "id": 305,
+                      "commonName": "Chestnut-backed Chickadee",
+                      "scientificName": "Poecile rufescens",
+                      "color": "#f8319e",
+                      "classification": "avian",
+                      "imageUrl": "https://media.birdweather.com/species/305/Chestnut-backedChickadee-standard-0ccc6a9522620eb8d8048026bf8d47a4.jpg",
+                      "thumbnailUrl": "https://media.birdweather.com/species/305/Chestnut-backedChickadee-thumbnail-1e6f597546372f2097b4dde0383a95e8.jpg",
+                      "detections": {
+                        "total": 1112,
+                        "almostCertain": 1112,
+                        "veryLikely": 0,
+                        "uncertain": 0,
+                        "unlikely": 0
+                      },
+                      "latestDetectionAt": "2022-11-17T16:48:10.986-08:00"
+                    },
+                    {
+                      "id": 161,
+                      "commonName": "Golden-crowned Sparrow",
+                      "scientificName": "Zonotrichia atricapilla",
+                      "color": "#c3a1ff",
+                      "classification": "avian",
+                      "imageUrl": "https://media.birdweather.com/species/161/Golden-crownedSparrow-standard-058175742a0428567bd8c79322b77884.jpg",
+                      "thumbnailUrl": "https://media.birdweather.com/species/161/Golden-crownedSparrow-thumbnail-8c352cc46e8ef5bec26dd849297393d7.jpg",
+                      "detections": {
+                        "total": 366,
+                        "almostCertain": 366,
+                        "veryLikely": 0,
+                        "uncertain": 0,
+                        "unlikely": 0
+                      },
+                      "latestDetectionAt": "2022-11-17T16:48:43.833-08:00"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stations/{token}/detections": {
+      "get": {
+        "tags": [
+          "Detections"
+        ],
+        "summary": "List Detections",
+        "operationId": "listDetections",
+        "description": "Lists all detections associated with this station in timestamp descending order. When the detections result is empty, a fallback list (unfiltered_detections) is included.\n\nParameters should be provided as query parameters. Pagination is cursor-based using limit/offset params.",
+        "externalDocs": {
+          "description": "BirdWeather documentation",
+          "url": "https://app.birdweather.com/api/v1#detections-detections-get"
+        },
+        "security": [
+          {},
+          {
+            "adminBearer": []
+          },
+          {
+            "adminToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "description": "Station authentication token.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "The maximum number of detections to return (max 100, default: 100).",
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "maximum": 100
+            },
+            "example": 10
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "The ID of the last detection to begin pagination from.",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 12345
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "description": "The timestamp in ISO8601 format to filter detections from (inclusive).",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2023-06-18"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "description": "The timestamp in ISO8601 format to filter detections to (inclusive).",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2023-07-05"
+          },
+          {
+            "name": "speciesId",
+            "in": "query",
+            "required": false,
+            "description": "List only detections for the given species.",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 305
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "description": "Limit results to species that match the given query (will be ignored if speciesId is provided).",
+            "schema": {
+              "type": "string"
+            },
+            "example": "magpie"
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "required": false,
+            "description": "Limit results to detections with the given soundscape mode [live / recorded / birdnetpi].",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "live",
+                "recorded",
+                "birdnetpi"
+              ]
+            },
+            "example": "live"
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "description": "Language locale to use for search query.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "es"
+          },
+          {
+            "name": "classification",
+            "in": "query",
+            "required": false,
+            "description": "Limit results to species with the given classification, or a comma-separated list of classifications (e.g. `bat,mammal`) [avian / amphibian / reptile / mammal / bat / insect].",
+            "schema": {
+              "type": "string"
+            },
+            "example": "avian"
+          },
+          {
+            "name": "behavior",
+            "in": "query",
+            "required": false,
+            "description": "Limit results to detections with the given bat behavior, or a comma-separated list (e.g. `bat_chase,bat_feeding_buzz`) [bat_search_open / bat_search_clutter / bat_chase / bat_feeding_buzz / bat_approach / bat_pass / bat_social]. `bat_approach` also matches `bat_chase`.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "bat_chase"
+          },
+          {
+            "name": "shortlist",
+            "in": "query",
+            "required": false,
+            "description": "Include the species shortlist for each detection that has one (default: false). Only honoured for stations on the `bat` edition; ignored for every other station, including `standard_bat` beta units. See Detection Info for the shortlist format.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "example": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "detections": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "unfiltered_detections": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "example1": {
+                    "value": {
+                      "success": true,
+                      "detections": [
+                        {},
+                        {}
+                      ]
+                    }
+                  },
+                  "example2": {
+                    "value": {
+                      "success": true,
+                      "detections": [],
+                      "unfiltered_detections": [
+                        {}
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Detections"
+        ],
+        "summary": "Post Detection",
+        "operationId": "postDetection",
+        "description": "Registers a detection that has previously been analyzed by BirdNET or a compatible soundscape analyzer.",
+        "externalDocs": {
+          "description": "BirdWeather documentation",
+          "url": "https://app.birdweather.com/api/v1#detections-detections-post"
+        },
+        "security": [
+          {},
+          {
+            "adminBearer": []
+          },
+          {
+            "adminToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "description": "Station authentication token.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "timestamp": {
+                    "type": "string",
+                    "description": "The timestamp of the start of the detection, in ISO8601 format."
+                  },
+                  "commonName": {
+                    "type": "string",
+                    "description": "The species’ common name."
+                  },
+                  "scientificName": {
+                    "type": "string",
+                    "description": "The species’ scientific name."
+                  },
+                  "lat": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Latitude for the detection (will use the station’s latitude if not specified)."
+                  },
+                  "lon": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Longitude for the detection (will use the station’s longitude if not specified)."
+                  },
+                  "confidence": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Confidence as detected by BirdNET."
+                  },
+                  "soundscapeId": {
+                    "type": "integer",
+                    "description": "ID of a previously uploaded soundscape."
+                  },
+                  "soundscapeStartTime": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Start time (in seconds) of the detection within the soundscape audio file."
+                  },
+                  "soundscapeEndTime": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "End time (in seconds) of the detection within the soundscape audio file."
+                  }
+                },
+                "required": [
+                  "timestamp",
+                  "commonName",
+                  "scientificName"
+                ]
+              },
+              "example": {
+                "timestamp": "2022-11-21T19:01:46.000-05:00",
+                "commonName": "Turkey Vulture",
+                "scientificName": "Cathartes aura",
+                "lat": 39.3634,
+                "lon": -84.2269,
+                "confidence": 0.7595082,
+                "soundscapeId": 25035244,
+                "soundscapeStartTime": 26,
+                "soundscapeEndTime": 29
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "timestamp": {
+                    "type": "string",
+                    "description": "The timestamp of the start of the detection, in ISO8601 format."
+                  },
+                  "commonName": {
+                    "type": "string",
+                    "description": "The species’ common name."
+                  },
+                  "scientificName": {
+                    "type": "string",
+                    "description": "The species’ scientific name."
+                  },
+                  "lat": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Latitude for the detection (will use the station’s latitude if not specified)."
+                  },
+                  "lon": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Longitude for the detection (will use the station’s longitude if not specified)."
+                  },
+                  "confidence": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Confidence as detected by BirdNET."
+                  },
+                  "soundscapeId": {
+                    "type": "integer",
+                    "description": "ID of a previously uploaded soundscape."
+                  },
+                  "soundscapeStartTime": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Start time (in seconds) of the detection within the soundscape audio file."
+                  },
+                  "soundscapeEndTime": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "End time (in seconds) of the detection within the soundscape audio file."
+                  }
+                },
+                "required": [
+                  "timestamp",
+                  "commonName",
+                  "scientificName"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "detection": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "stationId": {
+                          "type": "integer"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "species": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "commonName": {
+                              "type": "string"
+                            },
+                            "scientificName": {
+                              "type": "string"
+                            },
+                            "color": {
+                              "type": "string"
+                            },
+                            "classification": {
+                              "type": "string"
+                            },
+                            "imageUrl": {
+                              "type": "string"
+                            },
+                            "thumbnailUrl": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "lat": {
+                          "type": "number"
+                        },
+                        "lon": {
+                          "type": "number"
+                        },
+                        "confidence": {
+                          "type": "number"
+                        },
+                        "probability": {
+                          "type": "number"
+                        },
+                        "score": {
+                          "type": "number"
+                        },
+                        "certainty": {
+                          "type": "string"
+                        },
+                        "algorithm": {
+                          "type": "string"
+                        },
+                        "metadata": {
+                          "nullable": true
+                        },
+                        "soundscape": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "url": {
+                              "type": "string"
+                            },
+                            "startTime": {
+                              "type": "integer"
+                            },
+                            "endTime": {
+                              "type": "integer"
+                            },
+                            "mode": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "detection": {
+                    "id": 57299468,
+                    "stationId": 349,
+                    "timestamp": "2022-11-21T19:01:46.000-05:00",
+                    "species": {
+                      "id": 3046,
+                      "commonName": "Turkey Vulture",
+                      "scientificName": "Cathartes aura",
+                      "color": "#b0ae00",
+                      "classification": "avian",
+                      "imageUrl": "https://media.birdweather.com/species/3046/TurkeyVulture-standard-ed30d8dbd1a1da1205649e195bccc852.jpg",
+                      "thumbnailUrl": "https://media.birdweather.com/species/3046/TurkeyVulture-thumbnail-3c361f123db0ef92f7b65270c79ceaaa.jpg"
+                    },
+                    "lat": 39.3634,
+                    "lon": -84.2269,
+                    "confidence": 0.7595082,
+                    "probability": 0.215,
+                    "score": 7.30435925453706,
+                    "certainty": "almost_certain",
+                    "algorithm": "alpha",
+                    "metadata": null,
+                    "soundscape": {
+                      "id": 25035244,
+                      "url": "https://media.birdweather.com/soundscapes/52705eef883bf9f7e3f19bb36fbee9c2",
+                      "startTime": 26,
+                      "endTime": 29,
+                      "mode": "live"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "errors": {
+                      "type": "object",
+                      "properties": {
+                        "timestamp": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "species": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "success": false,
+                  "errors": {
+                    "timestamp": [
+                      "can't be blank"
+                    ],
+                    "species": [
+                      "must exist"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stations/{token}/detections/{id}": {
+      "get": {
+        "tags": [
+          "Detections"
+        ],
+        "summary": "Detection Info",
+        "operationId": "detectionDetectionInfo",
+        "description": "Retrieves information for the detection with the given ID.\n\nBat detections additionally include a `behavior` field (a human-readable label, e.g. `Chase`), a `behavior_key` field (the machine key, one of `bat_search_open`, `bat_search_clutter`, `bat_chase`, `bat_feeding_buzz`, `bat_approach`, `bat_pass`, `bat_social`), and a `behavior_confidence` float (0…1). These fields are omitted from the response when no behavior classification is available.\n\nWhen the detection has a shortlist, the response includes a `shortlist` array, ranked by `weight` descending. Each entry is an alternative candidate species the analyzer considered for the detection, with `speciesId`, `commonName`, `scientificName`, and a normalized `weight` (0…1). The field is omitted for detections without a shortlist, and is served only for stations on the `bat` edition – `standard_bat` beta units are capped to the `bat` identification rung and never expose the candidates behind that commit.",
+        "externalDocs": {
+          "description": "BirdWeather documentation",
+          "url": "https://app.birdweather.com/api/v1#detections-detection-get"
+        },
+        "security": [
+          {},
+          {
+            "adminBearer": []
+          },
+          {
+            "adminToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "description": "Station authentication token",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Detection ID",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 57299468
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "detection": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "stationId": {
+                          "type": "integer"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "species": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "commonName": {
+                              "type": "string"
+                            },
+                            "scientificName": {
+                              "type": "string"
+                            },
+                            "color": {
+                              "type": "string"
+                            },
+                            "classification": {
+                              "type": "string"
+                            },
+                            "imageUrl": {
+                              "type": "string"
+                            },
+                            "thumbnailUrl": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "lat": {
+                          "type": "number"
+                        },
+                        "lon": {
+                          "type": "number"
+                        },
+                        "confidence": {
+                          "type": "number"
+                        },
+                        "probability": {
+                          "type": "number"
+                        },
+                        "score": {
+                          "type": "number"
+                        },
+                        "certainty": {
+                          "type": "string"
+                        },
+                        "algorithm": {
+                          "type": "string"
+                        },
+                        "metadata": {
+                          "nullable": true
+                        },
+                        "soundscape": {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string"
+                            },
+                            "startTime": {
+                              "type": "integer"
+                            },
+                            "endTime": {
+                              "type": "integer"
+                            },
+                            "mode": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "shortlist": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "speciesId": {
+                                "type": "integer"
+                              },
+                              "weight": {
+                                "type": "number"
+                              },
+                              "commonName": {
+                                "type": "string"
+                              },
+                              "scientificName": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "detection": {
+                    "id": 57299468,
+                    "stationId": 349,
+                    "timestamp": "2022-11-21T19:01:46.000-05:00",
+                    "species": {
+                      "id": 3046,
+                      "commonName": "Turkey Vulture",
+                      "scientificName": "Cathartes aura",
+                      "color": "#b0ae00",
+                      "classification": "avian",
+                      "imageUrl": "https://media.birdweather.com/species/3046/TurkeyVulture-standard-ed30d8dbd1a1da1205649e195bccc852.jpg",
+                      "thumbnailUrl": "https://media.birdweather.com/species/3046/TurkeyVulture-thumbnail-3c361f123db0ef92f7b65270c79ceaaa.jpg"
+                    },
+                    "lat": 39.3634,
+                    "lon": -84.2269,
+                    "confidence": 0.7595082,
+                    "probability": 0.215,
+                    "score": 7.30435925453706,
+                    "certainty": "almost_certain",
+                    "algorithm": "alpha",
+                    "metadata": null,
+                    "soundscape": {
+                      "url": "https://media.birdweather.com/soundscapes/52705eef883bf9f7e3f19bb36fbee9c2",
+                      "startTime": 26,
+                      "endTime": 29,
+                      "mode": "live"
+                    },
+                    "shortlist": [
+                      {
+                        "speciesId": 41,
+                        "weight": 0.384,
+                        "commonName": "California Myotis",
+                        "scientificName": "Myotis californicus"
+                      },
+                      {
+                        "speciesId": 57,
+                        "weight": 0.239,
+                        "commonName": "Little Brown Bat",
+                        "scientificName": "Myotis lucifugus"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/detections/{id}": {
+      "get": {
+        "tags": [
+          "Detections"
+        ],
+        "summary": "Detection Info",
+        "operationId": "globalDetectionDetectionInfo",
+        "description": "Retrieves information for the detection with the given ID, regardless of which station recorded it. No authentication is required.\n\nThe response is identical to the station-scoped endpoint above, including `behavior` and `shortlist` where available.\n\nDetections recorded before May 2025 are not served by this endpoint; request them through the station-scoped endpoint instead.",
+        "externalDocs": {
+          "description": "BirdWeather documentation",
+          "url": "https://app.birdweather.com/api/v1#detections-global-detection-get"
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Detection ID",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 57299468
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "detection": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "stationId": {
+                          "type": "integer"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "species": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "commonName": {
+                              "type": "string"
+                            },
+                            "scientificName": {
+                              "type": "string"
+                            },
+                            "color": {
+                              "type": "string"
+                            },
+                            "classification": {
+                              "type": "string"
+                            },
+                            "imageUrl": {
+                              "type": "string"
+                            },
+                            "thumbnailUrl": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "lat": {
+                          "type": "number"
+                        },
+                        "lon": {
+                          "type": "number"
+                        },
+                        "confidence": {
+                          "type": "number"
+                        },
+                        "probability": {
+                          "type": "number"
+                        },
+                        "score": {
+                          "type": "number"
+                        },
+                        "certainty": {
+                          "type": "string"
+                        },
+                        "algorithm": {
+                          "type": "string"
+                        },
+                        "metadata": {
+                          "nullable": true
+                        },
+                        "soundscape": {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string"
+                            },
+                            "startTime": {
+                              "type": "integer"
+                            },
+                            "endTime": {
+                              "type": "integer"
+                            },
+                            "mode": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "detection": {
+                    "id": 57299468,
+                    "stationId": 349,
+                    "timestamp": "2022-11-21T19:01:46.000-05:00",
+                    "species": {
+                      "id": 3046,
+                      "commonName": "Turkey Vulture",
+                      "scientificName": "Cathartes aura",
+                      "color": "#b0ae00",
+                      "classification": "avian",
+                      "imageUrl": "https://media.birdweather.com/species/3046/TurkeyVulture-standard-ed30d8dbd1a1da1205649e195bccc852.jpg",
+                      "thumbnailUrl": "https://media.birdweather.com/species/3046/TurkeyVulture-thumbnail-3c361f123db0ef92f7b65270c79ceaaa.jpg"
+                    },
+                    "lat": 39.3634,
+                    "lon": -84.2269,
+                    "confidence": 0.7595082,
+                    "probability": 0.215,
+                    "score": 7.30435925453706,
+                    "certainty": "almost_certain",
+                    "algorithm": "alpha",
+                    "metadata": null,
+                    "soundscape": {
+                      "url": "https://media.birdweather.com/soundscapes/52705eef883bf9f7e3f19bb36fbee9c2",
+                      "startTime": 26,
+                      "endTime": 29,
+                      "mode": "live"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "success": false,
+                  "message": "Invalid detection ID"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stations/{token}/soundscapes": {
+      "get": {
+        "tags": [
+          "Soundscapes"
+        ],
+        "summary": "List Soundscapes",
+        "operationId": "listSoundscapes",
+        "description": "Lists all soundscapes associated with this station in timestamp descending order.\n\nParameters should be provided as query parameters. Pagination is cursor-based using limit/offset params.",
+        "externalDocs": {
+          "description": "BirdWeather documentation",
+          "url": "https://app.birdweather.com/api/v1#soundscapes-soundscapes-get"
+        },
+        "security": [
+          {},
+          {
+            "adminBearer": []
+          },
+          {
+            "adminToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "description": "Station authentication token",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "The maximum number of soundscapes to return (max 100, default: 100).",
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "maximum": 100
+            },
+            "example": 10
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "The ID of the last soundscape to begin pagination from.",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 12345
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "description": "The timestamp in ISO8601 format to filter soundscapes from (inclusive).",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2023-06-18"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "description": "The timestamp in ISO8601 format to filter soundscapes to (inclusive).",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2023-07-05"
+          },
+          {
+            "name": "speciesId",
+            "in": "query",
+            "required": false,
+            "description": "List only soundscapes with detections for the given species.",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 305
+          },
+          {
+            "name": "detections",
+            "in": "query",
+            "required": false,
+            "description": "Optionally include soundscape detections in JSON response (default: false).",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "example": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "soundscapes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "stationId": {
+                            "type": "integer"
+                          },
+                          "duration": {
+                            "type": "integer"
+                          },
+                          "filesize": {
+                            "type": "integer"
+                          },
+                          "sampleRate": {
+                            "type": "integer"
+                          },
+                          "timestamp": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "mode": {
+                            "type": "string"
+                          },
+                          "url": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "soundscapes": [
+                    {
+                      "id": 12345,
+                      "stationId": 1,
+                      "duration": 3,
+                      "filesize": 85444,
+                      "sampleRate": 48000,
+                      "timestamp": "2022-04-27T23:41:37.212-07:00",
+                      "mode": "live",
+                      "url": "https://media.birdweather.com/soundscapes/4de6d017c348f716959751efdf9e897c"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Soundscapes"
+        ],
+        "summary": "Upload Soundscape",
+        "operationId": "uploadSoundscape",
+        "description": "Uploads an audio file which can then be associated with a posted detection.\n\nThe audio file should be submitted as the POST body with the `timestamp` specified as a query parameter in the URL in ISO8601 format.",
+        "externalDocs": {
+          "description": "BirdWeather documentation",
+          "url": "https://app.birdweather.com/api/v1#soundscapes-soundscapes-post"
+        },
+        "security": [
+          {},
+          {
+            "adminBearer": []
+          },
+          {
+            "adminToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "description": "Station authentication token",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "timestamp",
+            "in": "query",
+            "required": true,
+            "description": "The timestamp of the start of the soundscape, in ISO8601 format",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2022-04-27T23:41:37.212-07:00"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "soundscape": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "stationId": {
+                          "type": "integer"
+                        },
+                        "duration": {
+                          "type": "integer"
+                        },
+                        "filesize": {
+                          "type": "integer"
+                        },
+                        "sampleRate": {
+                          "type": "integer"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "mode": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "soundscape": {
+                    "id": 12345,
+                    "stationId": 1,
+                    "duration": 3,
+                    "filesize": 85444,
+                    "sampleRate": 48000,
+                    "timestamp": "2022-04-27T23:41:37.212-07:00",
+                    "mode": "live",
+                    "url": "https://media.birdweather.com/soundscapes/4de6d017c348f716959751efdf9e897c"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stations/{token}/soundscapes/{id}": {
+      "get": {
+        "tags": [
+          "Soundscapes"
+        ],
+        "summary": "Soundscape Info",
+        "operationId": "soundscapeInfo",
+        "description": "Retrieves information for the soundscape with the given ID.",
+        "externalDocs": {
+          "description": "BirdWeather documentation",
+          "url": "https://app.birdweather.com/api/v1#soundscapes-soundscape-get"
+        },
+        "security": [
+          {},
+          {
+            "adminBearer": []
+          },
+          {
+            "adminToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "description": "Station authentication token",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Soundscape ID.",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 12345
+          },
+          {
+            "name": "detections",
+            "in": "query",
+            "required": false,
+            "description": "Optionally include soundscape detections in JSON response (default: false).",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "example": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "soundscape": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "stationId": {
+                          "type": "integer"
+                        },
+                        "duration": {
+                          "type": "integer"
+                        },
+                        "filesize": {
+                          "type": "integer"
+                        },
+                        "sampleRate": {
+                          "type": "integer"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "mode": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "soundscape": {
+                    "id": 12345,
+                    "stationId": 1,
+                    "duration": 3,
+                    "filesize": 85444,
+                    "sampleRate": 48000,
+                    "timestamp": "2022-04-27T23:41:37.212-07:00",
+                    "mode": "live",
+                    "url": "https://media.birdweather.com/soundscapes/4de6d017c348f716959751efdf9e897c"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/species/{id}": {
+      "get": {
+        "tags": [
+          "Species"
+        ],
+        "summary": "Lookup Species Info",
+        "operationId": "lookupSpeciesInfo",
+        "externalDocs": {
+          "description": "BirdWeather documentation",
+          "url": "https://app.birdweather.com/api/v1#species-species-get"
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Species ID.",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "species": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "commonName": {
+                          "type": "string"
+                        },
+                        "scientificName": {
+                          "type": "string"
+                        },
+                        "color": {
+                          "type": "string"
+                        },
+                        "classification": {
+                          "type": "string"
+                        },
+                        "imageUrl": {
+                          "type": "string"
+                        },
+                        "thumbnailUrl": {
+                          "type": "string"
+                        },
+                        "wikipediaUrl": {
+                          "type": "string"
+                        },
+                        "wikipediaSummary": {
+                          "type": "string"
+                        },
+                        "alpha": {
+                          "type": "string"
+                        },
+                        "alpha6": {
+                          "type": "string"
+                        },
+                        "ebirdCode": {
+                          "type": "string"
+                        },
+                        "ebirdUrl": {
+                          "type": "string"
+                        },
+                        "imageCredit": {
+                          "type": "string"
+                        },
+                        "imageCreditHtml": {
+                          "type": "string"
+                        },
+                        "imageLicense": {
+                          "type": "string"
+                        },
+                        "imageLicenseUrl": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "species": {
+                    "id": 1,
+                    "commonName": "House Sparrow",
+                    "scientificName": "Passer domesticus",
+                    "color": "#d16ff8",
+                    "classification": "avian",
+                    "imageUrl": "https://media.birdweather.com/species/1/HouseSparrow-standard-b861184cf45c092cdb45fd689dd676ef.jpg",
+                    "thumbnailUrl": "https://media.birdweather.com/species/1/HouseSparrow-thumbnail-e9cbc91763a1579de8ef04880678b5e3.jpg",
+                    "wikipediaUrl": "https://en.wikipedia.org/wiki/House_sparrow",
+                    "wikipediaSummary": "The house sparrow (Passer domesticus) is a bird of the sparrow family Passeridae, found in most parts of the world. It is a small bird that has a typical length of 16 cm (6.3 in) and a mass of 24–39.5 g (0.85–1.39 oz). Females and young birds are coloured pale brown and grey, and males have brighter black, white, and brown markings. One of about 25 species in the genus Passer, the house sparrow is native to most of Europe, the Mediterranean Basin, and a large part of Asia. Its intentional or accidental introductions to many regions, including parts of Australasia, Africa, and the Americas, make it the most widely distributed wild bird.\nThe house sparrow is strongly associated with human habitation, and can live in urban or rural settings. Though found in widely varied habitats and climates, it typically avoids extensive woodlands, grasslands, and deserts away from human development. It feeds mostly on the seeds of grains and weeds, but it is an opportunistic eater and commonly eats insects and many other foods. Its predators include domestic cats, hawks, and many other predatory birds and mammals.\nBecause of its numbers, ubiquity, and association with human settlements, the house sparrow is culturally prominent. It is extensively, and usually unsuccessfully, persecuted as an agricultural pest. It has also often been kept as a pet, as well as being a food item and a symbol of lust, sexual potency, commonness, and vulgarity. Though it is widespread and abundant, its numbers have declined in some areas. The animal's conservation status is listed as least concern on the IUCN Red List.",
+                    "alpha": "HOSP",
+                    "alpha6": "PASDOM",
+                    "ebirdCode": "houspa",
+                    "ebirdUrl": "https://ebird.org/species/houspa",
+                    "imageCredit": "Adamo",
+                    "imageCreditHtml": "<a rel=\"nofollow\" class=\"external text\" href=\"http://www.piqs.de/user/Adamo/\">Adamo</a>",
+                    "imageLicense": "CC BY 2.0 de",
+                    "imageLicenseUrl": "https://creativecommons.org/licenses/by/2.0/de/deed.en"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/species/lookup": {
+      "post": {
+        "tags": [
+          "Species"
+        ],
+        "summary": "Lookup Multiple Species",
+        "operationId": "lookupMultipleSpecies",
+        "externalDocs": {
+          "description": "BirdWeather documentation",
+          "url": "https://app.birdweather.com/api/v1#species-lookup-multiple-species-post"
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "species": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Array of BirdNET identifiers (Scientific Name_Common Name) to look up."
+                  },
+                  "fields": {
+                    "type": "array",
+                    "items": {},
+                    "description": "Array of species fields to include. Leave blank to include all."
+                  }
+                }
+              },
+              "example": {
+                "species": [
+                  "Passer domesticus_House Sparrow"
+                ]
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "species": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Array of BirdNET identifiers (Scientific Name_Common Name) to look up."
+                  },
+                  "fields": {
+                    "type": "array",
+                    "items": {},
+                    "description": "Array of species fields to include. Leave blank to include all."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "species": {
+                      "type": "object",
+                      "properties": {
+                        "Passer domesticus_House Sparrow": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "commonName": {
+                              "type": "string"
+                            },
+                            "scientificName": {
+                              "type": "string"
+                            },
+                            "color": {
+                              "type": "string"
+                            },
+                            "classification": {
+                              "type": "string"
+                            },
+                            "imageUrl": {
+                              "type": "string"
+                            },
+                            "thumbnailUrl": {
+                              "type": "string"
+                            },
+                            "wikipediaUrl": {
+                              "type": "string"
+                            },
+                            "wikipediaSummary": {
+                              "type": "string"
+                            },
+                            "alpha": {
+                              "type": "string"
+                            },
+                            "alpha6": {
+                              "type": "string"
+                            },
+                            "ebirdCode": {
+                              "type": "string"
+                            },
+                            "ebirdUrl": {
+                              "type": "string"
+                            },
+                            "imageCredit": {
+                              "type": "string"
+                            },
+                            "imageCreditHtml": {
+                              "type": "string"
+                            },
+                            "imageLicense": {
+                              "type": "string"
+                            },
+                            "imageLicenseUrl": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "species": {
+                    "Passer domesticus_House Sparrow": {
+                      "id": 1,
+                      "commonName": "House Sparrow",
+                      "scientificName": "Passer domesticus",
+                      "color": "#d16ff8",
+                      "classification": "avian",
+                      "imageUrl": "https://media.birdweather.com/species/1/HouseSparrow-standard-b861184cf45c092cdb45fd689dd676ef.jpg",
+                      "thumbnailUrl": "https://media.birdweather.com/species/1/HouseSparrow-thumbnail-e9cbc91763a1579de8ef04880678b5e3.jpg",
+                      "wikipediaUrl": "https://en.wikipedia.org/wiki/House_sparrow",
+                      "wikipediaSummary": "The house sparrow (Passer domesticus) is a bird of the sparrow family Passeridae, found in most parts of the world. It is a small bird that has a typical length of 16 cm (6.3 in) and a mass of 24–39.5 g (0.85–1.39 oz). Females and young birds are coloured pale brown and grey, and males have brighter black, white, and brown markings. One of about 25 species in the genus Passer, the house sparrow is native to most of Europe, the Mediterranean Basin, and a large part of Asia. Its intentional or accidental introductions to many regions, including parts of Australasia, Africa, and the Americas, make it the most widely distributed wild bird.\nThe house sparrow is strongly associated with human habitation, and can live in urban or rural settings. Though found in widely varied habitats and climates, it typically avoids extensive woodlands, grasslands, and deserts away from human development. It feeds mostly on the seeds of grains and weeds, but it is an opportunistic eater and commonly eats insects and many other foods. Its predators include domestic cats, hawks, and many other predatory birds and mammals.\nBecause of its numbers, ubiquity, and association with human settlements, the house sparrow is culturally prominent. It is extensively, and usually unsuccessfully, persecuted as an agricultural pest. It has also often been kept as a pet, as well as being a food item and a symbol of lust, sexual potency, commonness, and vulgarity. Though it is widespread and abundant, its numbers have declined in some areas. The animal's conservation status is listed as least concern on the IUCN Red List.",
+                      "alpha": "HOSP",
+                      "alpha6": "PASDOM",
+                      "ebirdCode": "houspa",
+                      "ebirdUrl": "https://ebird.org/species/houspa",
+                      "imageCredit": "Adamo",
+                      "imageCreditHtml": "<a rel=\"nofollow\" class=\"external text\" href=\"http://www.piqs.de/user/Adamo/\">Adamo</a>",
+                      "imageLicense": "CC BY 2.0 de",
+                      "imageLicenseUrl": "https://creativecommons.org/licenses/by/2.0/de/deed.en"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stations/{token}/config": {
+      "post": {
+        "tags": [
+          "Station Configuration"
+        ],
+        "summary": "Update Station Config",
+        "operationId": "updateStationConfig",
+        "description": "Updates the configuration for the given station.",
+        "externalDocs": {
+          "description": "BirdWeather documentation",
+          "url": "https://app.birdweather.com/api/v1#station-configuration-station-configuration-post"
+        },
+        "security": [
+          {},
+          {
+            "adminBearer": []
+          },
+          {
+            "adminToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "description": "Station authentication token",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The new name for the station."
+                  },
+                  "locationPrivacy": {
+                    "type": "boolean",
+                    "description": "Toggle location privacy."
+                  },
+                  "minConfidence": {
+                    "type": "number",
+                    "minimum": 0.35,
+                    "maximum": 1.0,
+                    "format": "float",
+                    "description": "Set minimum confidence for a valid detection (0.35 … 1.0)."
+                  },
+                  "minProbability": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 1.0,
+                    "format": "float",
+                    "description": "Set minimum probability for a valid detection (0.0 … 1.0)."
+                  },
+                  "minScore": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 10.0,
+                    "format": "float",
+                    "description": "Set minimum score for a valid detection (0.0 … 10.0)."
+                  },
+                  "minHumanConfidence": {
+                    "type": "number",
+                    "default": 0.04,
+                    "minimum": 0.01,
+                    "maximum": 0.25,
+                    "format": "float",
+                    "description": "Set minimum confidence for flagging human detections (0.01 … 0.25) [default: 0.04]. A lower value is more sensitive and will result in more soundscapes being auto-purged."
+                  }
+                }
+              },
+              "example": {
+                "name": "New Station Name",
+                "locationPrivacy": true,
+                "minConfidence": 0.45,
+                "minProbability": 0.2,
+                "minScore": 4.8,
+                "minHumanConfidence": 0.05
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The new name for the station."
+                  },
+                  "locationPrivacy": {
+                    "type": "boolean",
+                    "description": "Toggle location privacy."
+                  },
+                  "minConfidence": {
+                    "type": "number",
+                    "minimum": 0.35,
+                    "maximum": 1.0,
+                    "format": "float",
+                    "description": "Set minimum confidence for a valid detection (0.35 … 1.0)."
+                  },
+                  "minProbability": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 1.0,
+                    "format": "float",
+                    "description": "Set minimum probability for a valid detection (0.0 … 1.0)."
+                  },
+                  "minScore": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 10.0,
+                    "format": "float",
+                    "description": "Set minimum score for a valid detection (0.0 … 10.0)."
+                  },
+                  "minHumanConfidence": {
+                    "type": "number",
+                    "default": 0.04,
+                    "minimum": 0.01,
+                    "maximum": 0.25,
+                    "format": "float",
+                    "description": "Set minimum confidence for flagging human detections (0.01 … 0.25) [default: 0.04]. A lower value is more sensitive and will result in more soundscapes being auto-purged."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "station": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "timezone": {
+                          "nullable": true
+                        },
+                        "latestDetectionAt": {
+                          "nullable": true
+                        },
+                        "latestValidDetectionAt": {
+                          "nullable": true
+                        },
+                        "locationPrivacy": {
+                          "type": "boolean"
+                        },
+                        "minConfidence": {
+                          "type": "number"
+                        },
+                        "minProbability": {
+                          "type": "number"
+                        },
+                        "minScore": {
+                          "type": "number"
+                        },
+                        "minHumanConfidence": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "station": {
+                    "id": 12345,
+                    "name": "New Station Name",
+                    "type": "birdnetpi",
+                    "timezone": null,
+                    "latestDetectionAt": null,
+                    "latestValidDetectionAt": null,
+                    "locationPrivacy": true,
+                    "minConfidence": 0.45,
+                    "minProbability": 0.2,
+                    "minScore": 4.8,
+                    "minHumanConfidence": 0.05
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "example": {
+                  "success": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "adminBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Administrator API token, sent as `Authorization: Bearer <token>`."
+      },
+      "adminToken": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Auth-Token",
+        "description": "Administrator API token, sent in the `X-Auth-Token` header."
+      }
+    }
+  }
+}

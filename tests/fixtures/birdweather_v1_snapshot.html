@@ -1,0 +1,437 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>BirdWeather</title></head><body class="preload"><a class="text-muted back-to-top" href="#top"><i class="fa fa-toggle-up"></i> Back to top</a><div class="container"><div class="row"><div class="content"><header><h1 id="top">BirdWeather</h1></header><p>This is the documentation for V1 of the BirdWeather API.</p>
+<ul>
+<li><strong>Production:</strong> <a href="https://app.birdweather.com/api/v1">https://app.birdweather.com/api/v1</a></li>
+</ul>
+<p>POST parameters can be passed either as a JSON object string <code>(application/json)</code> or as HTML encoded form parameters <code>(application/x-www-form-urlencoded)</code>. The examples below will use JSON.</p>
+<p>For authenticated requests, the authentication token is passed as the <code>{token}</code> path segment. User endpoints additionally accept it as a JSON or form parameter <code>token</code>, or using the <code>Authorization</code> or <code>X-Auth-Token</code> header.</p>
+<p>Administrators may instead authenticate with an administrator API token, obtained from the BirdWeather admin. This token is <strong>only</strong> read from the <code>Authorization</code> (as <code>Bearer &lt;token&gt;</code>) or <code>X-Auth-Token</code> header — never from the URL or a request parameter. When it is supplied, station endpoints accept a numeric <strong>station id</strong> in place of the station’s own token, and are not restricted to active stations. An administrator token grants full read and write access to every station, including destructive endpoints, so it should be treated as a password and regenerated in the admin if exposed.</p>
+<p>For support, please contact <a href="mailto:support@birdweather.com">support@birdweather.com</a>.</p>
+<section class="resource-group" id="station-stats"><h2 class="group-heading">Station Stats <a class="permalink" href="#station-stats">¶</a></h2><div class="resource" id="station-stats-station-stats"><h3 class="resource-heading">Station Stats <a class="permalink" href="#station-stats-station-stats"> ¶</a></h3><p>These endpoints require authentication with a station auth token.</p>
+<div class="action get" id="station-stats-station-stats-get"><h4 class="action-heading"><div class="name">Fetch Stats</div><a class="method get" href="#station-stats-station-stats-get">GET</a><code class="uri">/api/v1/stations/{token}/stats{?period,since,mode,classification}</code></h4><h4>Example URI</h4><div class="definition"><span class="method get">GET</span> <span class="uri"><span class="hostname"></span>/api/v1/stations/<span class="hljs-attribute" title="token">token</span>/stats?<span class="hljs-attribute">period=</span><span class="hljs-literal">week</span>&amp;<span class="hljs-attribute">since=</span><span class="hljs-literal">2023-06-18</span>&amp;<span class="hljs-attribute">mode=</span><span class="hljs-literal">live</span>&amp;<span class="hljs-attribute">classification=</span><span class="hljs-literal">avian</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>token</dt><dd><code>string</code> <span class="required">(required)</span> <p>Station authentication token</p>
+</dd><dt>period</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>week</span></span><p>The time period to filter detections [day / week / month / all] (default: day).</p>
+</dd><dt>since</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>2023-06-18</span></span><p>Timestamp to filter detections from, in ISO8601 format. Overrides period if passed.</p>
+</dd><dt>mode</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>live</span></span><p>Limit results to detections with the given soundscape mode [live / recorded / birdnetpi].</p>
+</dd><dt>classification</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>avian</span></span><p>Limit results to species with the given classification, or a comma-separated list of classifications (e.g. <code>bat,mammal</code>) [avian / amphibian / reptile / mammal / bat / insect].</p>
+</dd></dl></div><div class="title"><strong>Response  <code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">success</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+  "<span class="hljs-attribute">detections</span>": <span class="hljs-value"><span class="hljs-number">12345</span></span>,
+  "<span class="hljs-attribute">species</span>": <span class="hljs-value"><span class="hljs-number">99</span>
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div></section><section class="resource-group" id="station-species"><h2 class="group-heading">Station Species <a class="permalink" href="#station-species">¶</a></h2><div class="resource" id="station-species-station-species"><h3 class="resource-heading">Station Species <a class="permalink" href="#station-species-station-species"> ¶</a></h3><p>These endpoints require authentication with a station auth token.</p>
+<div class="action get" id="station-species-station-species-get"><h4 class="action-heading"><div class="name">Top Species</div><a class="method get" href="#station-species-station-species-get">GET</a><code class="uri">/api/v1/stations/{token}/species{?period,from,to,since,limit,page,sort,order,speciesId,query,mode,locale,classification}</code></h4><p>Returns a list of species detected by the station, along with their detection counts.</p>
+<p>By default it will return the top species by detection count, but can be reordered by species common or scientific name.</p>
+<h4>Example URI</h4><div class="definition"><span class="method get">GET</span> <span class="uri"><span class="hostname"></span>/api/v1/stations/<span class="hljs-attribute" title="token">token</span>/species?<span class="hljs-attribute">period=</span><span class="hljs-literal">week</span>&amp;<span class="hljs-attribute">from=</span><span class="hljs-literal">2023-06-18</span>&amp;<span class="hljs-attribute">to=</span><span class="hljs-literal">2023-06-20</span>&amp;<span class="hljs-attribute">since=</span><span class="hljs-literal">2023-06-18</span>&amp;<span class="hljs-attribute">limit=</span><span class="hljs-literal">10</span>&amp;<span class="hljs-attribute">page=</span><span class="hljs-literal">2</span>&amp;<span class="hljs-attribute">sort=</span><span class="hljs-literal">common_name</span>&amp;<span class="hljs-attribute">order=</span><span class="hljs-literal">desc</span>&amp;<span class="hljs-attribute">speciesId=</span><span class="hljs-literal">305</span>&amp;<span class="hljs-attribute">query=</span><span class="hljs-literal">magpie</span>&amp;<span class="hljs-attribute">mode=</span><span class="hljs-literal">live</span>&amp;<span class="hljs-attribute">locale=</span><span class="hljs-literal">es</span>&amp;<span class="hljs-attribute">classification=</span><span class="hljs-literal">avian</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>token</dt><dd><code>string</code> <span class="required">(required)</span> <p>Station authentication token</p>
+</dd><dt>period</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>week</span></span><p>The time period to filter detections [day / week / month / all] (default: day).</p>
+</dd><dt>from</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>2023-06-18</span></span><p>Timestamp to filter detections from, in ISO8601 format. Overrides period if passed.</p>
+</dd><dt>to</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>2023-06-20</span></span><p>Timestamp to filter detections to, in ISO8601 format. Overrides period if passed.</p>
+</dd><dt>since</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>2023-06-18</span></span><p>Alias for <code>from</code> parameter. Overrides period if passed.</p>
+</dd><dt>limit</dt><dd><code>integer</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>10</span></span><p>The maximum number of species to return (max 100, default: 100).</p>
+</dd><dt>page</dt><dd><code>integer</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>2</span></span><p>The page number of species to return (default: 1).</p>
+</dd><dt>sort</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>common_name</span></span><p>Alternative field to sort by [common_name / scientific_name / top] (default: top).</p>
+</dd><dt>order</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>desc</span></span><p>Sort order [asc / desc] (default: asc when sorting by name, otherwise desc).</p>
+</dd><dt>speciesId</dt><dd><code>integer</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>305</span></span><p>Limit results to the given species.</p>
+</dd><dt>query</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>magpie</span></span><p>Limit results to species that match the given query (will be ignored if speciesId is provided).</p>
+</dd><dt>mode</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>live</span></span><p>Limit results to detections with the given soundscape mode [live / recorded / birdnetpi].</p>
+</dd><dt>locale</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>es</span></span><p>Language locale to use for search query.</p>
+</dd><dt>classification</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>avian</span></span><p>Limit results to species with the given classification, or a comma-separated list of classifications (e.g. <code>bat,mammal</code>) [avian / amphibian / reptile / mammal / bat / insect].</p>
+</dd></dl></div><div class="title"><strong>Response  <code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">success</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+  "<span class="hljs-attribute">species</span>": <span class="hljs-value">[
+    {
+      "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">305</span></span>,
+      "<span class="hljs-attribute">commonName</span>": <span class="hljs-value"><span class="hljs-string">"Chestnut-backed Chickadee"</span></span>,
+      "<span class="hljs-attribute">scientificName</span>": <span class="hljs-value"><span class="hljs-string">"Poecile rufescens"</span></span>,
+      "<span class="hljs-attribute">color</span>": <span class="hljs-value"><span class="hljs-string">"#f8319e"</span></span>,
+      "<span class="hljs-attribute">classification</span>": <span class="hljs-value"><span class="hljs-string">"avian"</span></span>,
+      "<span class="hljs-attribute">imageUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/species/305/Chestnut-backedChickadee-standard-0ccc6a9522620eb8d8048026bf8d47a4.jpg"</span></span>,
+      "<span class="hljs-attribute">thumbnailUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/species/305/Chestnut-backedChickadee-thumbnail-1e6f597546372f2097b4dde0383a95e8.jpg"</span></span>,
+      "<span class="hljs-attribute">detections</span>": <span class="hljs-value">{
+        "<span class="hljs-attribute">total</span>": <span class="hljs-value"><span class="hljs-number">1112</span></span>,
+        "<span class="hljs-attribute">almostCertain</span>": <span class="hljs-value"><span class="hljs-number">1112</span></span>,
+        "<span class="hljs-attribute">veryLikely</span>": <span class="hljs-value"><span class="hljs-number">0</span></span>,
+        "<span class="hljs-attribute">uncertain</span>": <span class="hljs-value"><span class="hljs-number">0</span></span>,
+        "<span class="hljs-attribute">unlikely</span>": <span class="hljs-value"><span class="hljs-number">0</span>
+      </span>}</span>,
+      "<span class="hljs-attribute">latestDetectionAt</span>": <span class="hljs-value"><span class="hljs-string">"2022-11-17T16:48:10.986-08:00"</span>
+    </span>},
+    {
+      "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">161</span></span>,
+      "<span class="hljs-attribute">commonName</span>": <span class="hljs-value"><span class="hljs-string">"Golden-crowned Sparrow"</span></span>,
+      "<span class="hljs-attribute">scientificName</span>": <span class="hljs-value"><span class="hljs-string">"Zonotrichia atricapilla"</span></span>,
+      "<span class="hljs-attribute">color</span>": <span class="hljs-value"><span class="hljs-string">"#c3a1ff"</span></span>,
+      "<span class="hljs-attribute">classification</span>": <span class="hljs-value"><span class="hljs-string">"avian"</span></span>,
+      "<span class="hljs-attribute">imageUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/species/161/Golden-crownedSparrow-standard-058175742a0428567bd8c79322b77884.jpg"</span></span>,
+      "<span class="hljs-attribute">thumbnailUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/species/161/Golden-crownedSparrow-thumbnail-8c352cc46e8ef5bec26dd849297393d7.jpg"</span></span>,
+      "<span class="hljs-attribute">detections</span>": <span class="hljs-value">{
+        "<span class="hljs-attribute">total</span>": <span class="hljs-value"><span class="hljs-number">366</span></span>,
+        "<span class="hljs-attribute">almostCertain</span>": <span class="hljs-value"><span class="hljs-number">366</span></span>,
+        "<span class="hljs-attribute">veryLikely</span>": <span class="hljs-value"><span class="hljs-number">0</span></span>,
+        "<span class="hljs-attribute">uncertain</span>": <span class="hljs-value"><span class="hljs-number">0</span></span>,
+        "<span class="hljs-attribute">unlikely</span>": <span class="hljs-value"><span class="hljs-number">0</span>
+      </span>}</span>,
+      "<span class="hljs-attribute">latestDetectionAt</span>": <span class="hljs-value"><span class="hljs-string">"2022-11-17T16:48:43.833-08:00"</span>
+    </span>}
+  ]
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div></section><section class="resource-group" id="detections"><h2 class="group-heading">Detections <a class="permalink" href="#detections">¶</a></h2><div class="resource" id="detections-detections"><h3 class="resource-heading">Detections <a class="permalink" href="#detections-detections"> ¶</a></h3><p>These endpoints require authentication with a station auth token.</p>
+<div class="action post" id="detections-detections-post"><h4 class="action-heading"><div class="name">Post Detection</div><a class="method post" href="#detections-detections-post">POST</a><code class="uri">/api/v1/stations/{token}/detections</code></h4><p>Registers a detection that has previously been analyzed by BirdNET or a compatible soundscape analyzer.</p>
+<ul>
+<li>
+<p>timestamp (string, required) - The timestamp of the start of the detection, in ISO8601 format.</p>
+</li>
+<li>
+<p>commonName (string, required) - The species’ common name.</p>
+</li>
+<li>
+<p>scientificName (string, required) - The species’ scientific name.</p>
+</li>
+<li>
+<p>lat (float) - Latitude for the detection (will use the station’s latitude if not specified).</p>
+</li>
+<li>
+<p>lon (float) - Longitude for the detection (will use the station’s longitude if not specified).</p>
+</li>
+<li>
+<p>confidence (float) - Confidence as detected by BirdNET.</p>
+</li>
+<li>
+<p>soundscapeId (integer) - ID of a previously uploaded soundscape.</p>
+</li>
+<li>
+<p>soundscapeStartTime (float) - Start time (in seconds) of the detection within the soundscape audio file.</p>
+</li>
+<li>
+<p>soundscapeEndTime (float) - End time (in seconds) of the detection within the soundscape audio file.</p>
+</li>
+</ul>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span> <span class="uri"><span class="hostname"></span>/api/v1/stations/<span class="hljs-attribute" title="token">token</span>/detections</span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>token</dt><dd><code>string</code> <span class="required">(required)</span> <p>Station authentication token.</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">timestamp</span>": <span class="hljs-value"><span class="hljs-string">"2022-11-21T19:01:46.000-05:00"</span></span>,
+  "<span class="hljs-attribute">commonName</span>": <span class="hljs-value"><span class="hljs-string">"Turkey Vulture"</span></span>,
+  "<span class="hljs-attribute">scientificName</span>": <span class="hljs-value"><span class="hljs-string">"Cathartes aura"</span></span>,
+  "<span class="hljs-attribute">lat</span>": <span class="hljs-value"><span class="hljs-number">39.3634</span></span>,
+  "<span class="hljs-attribute">lon</span>": <span class="hljs-value">-<span class="hljs-number">84.2269</span></span>,
+  "<span class="hljs-attribute">confidence</span>": <span class="hljs-value"><span class="hljs-number">0.7595082</span></span>,
+  "<span class="hljs-attribute">soundscapeId</span>": <span class="hljs-value"><span class="hljs-number">25035244</span></span>,
+  "<span class="hljs-attribute">soundscapeStartTime</span>": <span class="hljs-value"><span class="hljs-number">26</span></span>,
+  "<span class="hljs-attribute">soundscapeEndTime</span>": <span class="hljs-value"><span class="hljs-number">29</span>
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response  <code>201</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">success</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+  "<span class="hljs-attribute">detection</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">57299468</span></span>,
+    "<span class="hljs-attribute">stationId</span>": <span class="hljs-value"><span class="hljs-number">349</span></span>,
+    "<span class="hljs-attribute">timestamp</span>": <span class="hljs-value"><span class="hljs-string">"2022-11-21T19:01:46.000-05:00"</span></span>,
+    "<span class="hljs-attribute">species</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">3046</span></span>,
+      "<span class="hljs-attribute">commonName</span>": <span class="hljs-value"><span class="hljs-string">"Turkey Vulture"</span></span>,
+      "<span class="hljs-attribute">scientificName</span>": <span class="hljs-value"><span class="hljs-string">"Cathartes aura"</span></span>,
+      "<span class="hljs-attribute">color</span>": <span class="hljs-value"><span class="hljs-string">"#b0ae00"</span></span>,
+      "<span class="hljs-attribute">classification</span>": <span class="hljs-value"><span class="hljs-string">"avian"</span></span>,
+      "<span class="hljs-attribute">imageUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/species/3046/TurkeyVulture-standard-ed30d8dbd1a1da1205649e195bccc852.jpg"</span></span>,
+      "<span class="hljs-attribute">thumbnailUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/species/3046/TurkeyVulture-thumbnail-3c361f123db0ef92f7b65270c79ceaaa.jpg"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">lat</span>": <span class="hljs-value"><span class="hljs-number">39.3634</span></span>,
+    "<span class="hljs-attribute">lon</span>": <span class="hljs-value">-<span class="hljs-number">84.2269</span></span>,
+    "<span class="hljs-attribute">confidence</span>": <span class="hljs-value"><span class="hljs-number">0.7595082</span></span>,
+    "<span class="hljs-attribute">probability</span>": <span class="hljs-value"><span class="hljs-number">0.215</span></span>,
+    "<span class="hljs-attribute">score</span>": <span class="hljs-value"><span class="hljs-number">7.30435925453706</span></span>,
+    "<span class="hljs-attribute">certainty</span>": <span class="hljs-value"><span class="hljs-string">"almost_certain"</span></span>,
+    "<span class="hljs-attribute">algorithm</span>": <span class="hljs-value"><span class="hljs-string">"alpha"</span></span>,
+    "<span class="hljs-attribute">metadata</span>": <span class="hljs-value"><span class="hljs-literal">null</span></span>,
+    "<span class="hljs-attribute">soundscape</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">25035244</span></span>,
+      "<span class="hljs-attribute">url</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/soundscapes/52705eef883bf9f7e3f19bb36fbee9c2"</span></span>,
+      "<span class="hljs-attribute">startTime</span>": <span class="hljs-value"><span class="hljs-number">26</span></span>,
+      "<span class="hljs-attribute">endTime</span>": <span class="hljs-value"><span class="hljs-number">29</span></span>,
+      "<span class="hljs-attribute">mode</span>": <span class="hljs-value"><span class="hljs-string">"live"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response  <code>422</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">success</span>": <span class="hljs-value"><span class="hljs-literal">false</span></span>,
+  "<span class="hljs-attribute">errors</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">timestamp</span>": <span class="hljs-value">[
+      <span class="hljs-string">"can't be blank"</span>
+    ]</span>,
+    "<span class="hljs-attribute">species</span>": <span class="hljs-value">[
+      <span class="hljs-string">"must exist"</span>
+    ]
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div><div class="action get" id="detections-detections-get"><h4 class="action-heading"><div class="name">List Detections</div><a class="method get" href="#detections-detections-get">GET</a><code class="uri">/api/v1/stations/{token}/detections{?limit,cursor,from,to,speciesId,query,mode,locale,classification,behavior,shortlist}</code></h4><p>Lists all detections associated with this station in timestamp descending order.
+When the detections result is empty, a fallback list (unfiltered_detections) is included.</p>
+<p>Parameters should be provided as query parameters. Pagination is cursor-based using limit/offset params.</p>
+<h4>Example URI</h4><div class="definition"><span class="method get">GET</span> <span class="uri"><span class="hostname"></span>/api/v1/stations/<span class="hljs-attribute" title="token">token</span>/detections?<span class="hljs-attribute">limit=</span><span class="hljs-literal">10</span>&amp;<span class="hljs-attribute">cursor=</span><span class="hljs-literal">12345</span>&amp;<span class="hljs-attribute">from=</span><span class="hljs-literal">2023-06-18</span>&amp;<span class="hljs-attribute">to=</span><span class="hljs-literal">2023-07-05</span>&amp;<span class="hljs-attribute">speciesId=</span><span class="hljs-literal">305</span>&amp;<span class="hljs-attribute">query=</span><span class="hljs-literal">magpie</span>&amp;<span class="hljs-attribute">mode=</span><span class="hljs-literal">live</span>&amp;<span class="hljs-attribute">locale=</span><span class="hljs-literal">es</span>&amp;<span class="hljs-attribute">classification=</span><span class="hljs-literal">avian</span>&amp;<span class="hljs-attribute">behavior=</span><span class="hljs-literal">bat_chase</span>&amp;<span class="hljs-attribute">shortlist=</span><span class="hljs-literal">true</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>token</dt><dd><code>string</code> <span class="required">(required)</span> <p>Station authentication token.</p>
+</dd><dt>limit</dt><dd><code>integer</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>10</span></span><p>The maximum number of detections to return (max 100, default: 100).</p>
+</dd><dt>cursor</dt><dd><code>integer</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>12345</span></span><p>The ID of the last detection to begin pagination from.</p>
+</dd><dt>from</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>2023-06-18</span></span><p>The timestamp in ISO8601 format to filter detections from (inclusive).</p>
+</dd><dt>to</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>2023-07-05</span></span><p>The timestamp in ISO8601 format to filter detections to (inclusive).</p>
+</dd><dt>speciesId</dt><dd><code>integer</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>305</span></span><p>List only detections for the given species.</p>
+</dd><dt>query</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>magpie</span></span><p>Limit results to species that match the given query (will be ignored if speciesId is provided).</p>
+</dd><dt>mode</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>live</span></span><p>Limit results to detections with the given soundscape mode [live / recorded / birdnetpi].</p>
+</dd><dt>locale</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>es</span></span><p>Language locale to use for search query.</p>
+</dd><dt>classification</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>avian</span></span><p>Limit results to species with the given classification, or a comma-separated list of classifications (e.g. <code>bat,mammal</code>) [avian / amphibian / reptile / mammal / bat / insect].</p>
+</dd><dt>behavior</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>bat_chase</span></span><p>Limit results to detections with the given bat behavior, or a comma-separated list (e.g. <code>bat_chase,bat_feeding_buzz</code>) [bat_search_open / bat_search_clutter / bat_chase / bat_feeding_buzz / bat_approach / bat_pass / bat_social]. <code>bat_approach</code> also matches <code>bat_chase</code>.</p>
+</dd><dt>shortlist</dt><dd><code>boolean</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>true</span></span><p>Include the species shortlist for each detection that has one (default: false). Only honoured for stations on the <code>bat</code> edition; ignored for every other station, including <code>standard_bat</code> beta units. See Detection Info for the shortlist format.</p>
+</dd></dl></div><div class="title"><strong>Response  <code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+    <span class="hljs-string">"success"</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-string">"detections"</span>: [
+        {
+            ...
+        },
+        {
+            ...
+        }
+    ]
+}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response  <code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+    <span class="hljs-string">"success"</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-string">"detections"</span>: [],
+    <span class="hljs-string">"unfiltered_detections"</span>: [
+        {
+            ...
+        }
+    ]
+}</code></pre><div style="height: 1px;"></div></div></div></div></div><div class="resource" id="detections-detection"><h3 class="resource-heading">Detection <a class="permalink" href="#detections-detection"> ¶</a></h3><p>These endpoints require authentication with a station auth token.</p>
+<div class="action get" id="detections-detection-get"><h4 class="action-heading"><div class="name">Detection Info</div><a class="method get" href="#detections-detection-get">GET</a><code class="uri">/api/v1/stations/{token}/detections/{id}</code></h4><p>Retrieves information for the detection with the given ID.</p>
+<p>Bat detections additionally include a <code>behavior</code> field (a human-readable label, e.g. <code>Chase</code>), a <code>behavior_key</code> field (the machine key, one of <code>bat_search_open</code>, <code>bat_search_clutter</code>, <code>bat_chase</code>, <code>bat_feeding_buzz</code>, <code>bat_approach</code>, <code>bat_pass</code>, <code>bat_social</code>), and a <code>behavior_confidence</code> float (0…1). These fields are omitted from the response when no behavior classification is available.</p>
+<p>When the detection has a shortlist, the response includes a <code>shortlist</code> array, ranked by <code>weight</code> descending. Each entry is an alternative candidate species the analyzer considered for the detection, with <code>speciesId</code>, <code>commonName</code>, <code>scientificName</code>, and a normalized <code>weight</code> (0…1). The field is omitted for detections without a shortlist, and is served only for stations on the <code>bat</code> edition – <code>standard_bat</code> beta units are capped to the <code>bat</code> identification rung and never expose the candidates behind that commit.</p>
+<h4>Example URI</h4><div class="definition"><span class="method get">GET</span> <span class="uri"><span class="hostname"></span>/api/v1/stations/<span class="hljs-attribute" title="token">token</span>/detections/<span class="hljs-attribute" title="id">57299468</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>token</dt><dd><code>string</code> <span class="required">(required)</span> <p>Station authentication token</p>
+</dd><dt>id</dt><dd><code>integer</code> <span class="required">(required)</span> <span class="text-muted example"><strong>Example: </strong><span>57299468</span></span><p>Detection ID</p>
+</dd></dl></div><div class="title"><strong>Response  <code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">success</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+  "<span class="hljs-attribute">detection</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">57299468</span></span>,
+    "<span class="hljs-attribute">stationId</span>": <span class="hljs-value"><span class="hljs-number">349</span></span>,
+    "<span class="hljs-attribute">timestamp</span>": <span class="hljs-value"><span class="hljs-string">"2022-11-21T19:01:46.000-05:00"</span></span>,
+    "<span class="hljs-attribute">species</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">3046</span></span>,
+      "<span class="hljs-attribute">commonName</span>": <span class="hljs-value"><span class="hljs-string">"Turkey Vulture"</span></span>,
+      "<span class="hljs-attribute">scientificName</span>": <span class="hljs-value"><span class="hljs-string">"Cathartes aura"</span></span>,
+      "<span class="hljs-attribute">color</span>": <span class="hljs-value"><span class="hljs-string">"#b0ae00"</span></span>,
+      "<span class="hljs-attribute">classification</span>": <span class="hljs-value"><span class="hljs-string">"avian"</span></span>,
+      "<span class="hljs-attribute">imageUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/species/3046/TurkeyVulture-standard-ed30d8dbd1a1da1205649e195bccc852.jpg"</span></span>,
+      "<span class="hljs-attribute">thumbnailUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/species/3046/TurkeyVulture-thumbnail-3c361f123db0ef92f7b65270c79ceaaa.jpg"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">lat</span>": <span class="hljs-value"><span class="hljs-number">39.3634</span></span>,
+    "<span class="hljs-attribute">lon</span>": <span class="hljs-value">-<span class="hljs-number">84.2269</span></span>,
+    "<span class="hljs-attribute">confidence</span>": <span class="hljs-value"><span class="hljs-number">0.7595082</span></span>,
+    "<span class="hljs-attribute">probability</span>": <span class="hljs-value"><span class="hljs-number">0.215</span></span>,
+    "<span class="hljs-attribute">score</span>": <span class="hljs-value"><span class="hljs-number">7.30435925453706</span></span>,
+    "<span class="hljs-attribute">certainty</span>": <span class="hljs-value"><span class="hljs-string">"almost_certain"</span></span>,
+    "<span class="hljs-attribute">algorithm</span>": <span class="hljs-value"><span class="hljs-string">"alpha"</span></span>,
+    "<span class="hljs-attribute">metadata</span>": <span class="hljs-value"><span class="hljs-literal">null</span></span>,
+    "<span class="hljs-attribute">soundscape</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">url</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/soundscapes/52705eef883bf9f7e3f19bb36fbee9c2"</span></span>,
+      "<span class="hljs-attribute">startTime</span>": <span class="hljs-value"><span class="hljs-number">26</span></span>,
+      "<span class="hljs-attribute">endTime</span>": <span class="hljs-value"><span class="hljs-number">29</span></span>,
+      "<span class="hljs-attribute">mode</span>": <span class="hljs-value"><span class="hljs-string">"live"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">shortlist</span>": <span class="hljs-value">[
+      {
+        "<span class="hljs-attribute">speciesId</span>": <span class="hljs-value"><span class="hljs-number">41</span></span>,
+        "<span class="hljs-attribute">weight</span>": <span class="hljs-value"><span class="hljs-number">0.384</span></span>,
+        "<span class="hljs-attribute">commonName</span>": <span class="hljs-value"><span class="hljs-string">"California Myotis"</span></span>,
+        "<span class="hljs-attribute">scientificName</span>": <span class="hljs-value"><span class="hljs-string">"Myotis californicus"</span>
+      </span>},
+      {
+        "<span class="hljs-attribute">speciesId</span>": <span class="hljs-value"><span class="hljs-number">57</span></span>,
+        "<span class="hljs-attribute">weight</span>": <span class="hljs-value"><span class="hljs-number">0.239</span></span>,
+        "<span class="hljs-attribute">commonName</span>": <span class="hljs-value"><span class="hljs-string">"Little Brown Bat"</span></span>,
+        "<span class="hljs-attribute">scientificName</span>": <span class="hljs-value"><span class="hljs-string">"Myotis lucifugus"</span>
+      </span>}
+    ]
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div class="resource" id="detections-global-detection"><h3 class="resource-heading">Global Detection <a class="permalink" href="#detections-global-detection"> ¶</a></h3><div class="action get" id="detections-global-detection-get"><h4 class="action-heading"><div class="name">Detection Info</div><a class="method get" href="#detections-global-detection-get">GET</a><code class="uri">/api/v1/detections/{id}</code></h4><p>Retrieves information for the detection with the given ID, regardless of which station recorded it. No authentication is required.</p>
+<p>The response is identical to the station-scoped endpoint above, including <code>behavior</code> and <code>shortlist</code> where available.</p>
+<p>Detections recorded before May 2025 are not served by this endpoint; request them through the station-scoped endpoint instead.</p>
+<h4>Example URI</h4><div class="definition"><span class="method get">GET</span> <span class="uri"><span class="hostname"></span>/api/v1/detections/<span class="hljs-attribute" title="id">57299468</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>id</dt><dd><code>integer</code> <span class="required">(required)</span> <span class="text-muted example"><strong>Example: </strong><span>57299468</span></span><p>Detection ID</p>
+</dd></dl></div><div class="title"><strong>Response  <code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">success</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+  "<span class="hljs-attribute">detection</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">57299468</span></span>,
+    "<span class="hljs-attribute">stationId</span>": <span class="hljs-value"><span class="hljs-number">349</span></span>,
+    "<span class="hljs-attribute">timestamp</span>": <span class="hljs-value"><span class="hljs-string">"2022-11-21T19:01:46.000-05:00"</span></span>,
+    "<span class="hljs-attribute">species</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">3046</span></span>,
+      "<span class="hljs-attribute">commonName</span>": <span class="hljs-value"><span class="hljs-string">"Turkey Vulture"</span></span>,
+      "<span class="hljs-attribute">scientificName</span>": <span class="hljs-value"><span class="hljs-string">"Cathartes aura"</span></span>,
+      "<span class="hljs-attribute">color</span>": <span class="hljs-value"><span class="hljs-string">"#b0ae00"</span></span>,
+      "<span class="hljs-attribute">classification</span>": <span class="hljs-value"><span class="hljs-string">"avian"</span></span>,
+      "<span class="hljs-attribute">imageUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/species/3046/TurkeyVulture-standard-ed30d8dbd1a1da1205649e195bccc852.jpg"</span></span>,
+      "<span class="hljs-attribute">thumbnailUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/species/3046/TurkeyVulture-thumbnail-3c361f123db0ef92f7b65270c79ceaaa.jpg"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">lat</span>": <span class="hljs-value"><span class="hljs-number">39.3634</span></span>,
+    "<span class="hljs-attribute">lon</span>": <span class="hljs-value">-<span class="hljs-number">84.2269</span></span>,
+    "<span class="hljs-attribute">confidence</span>": <span class="hljs-value"><span class="hljs-number">0.7595082</span></span>,
+    "<span class="hljs-attribute">probability</span>": <span class="hljs-value"><span class="hljs-number">0.215</span></span>,
+    "<span class="hljs-attribute">score</span>": <span class="hljs-value"><span class="hljs-number">7.30435925453706</span></span>,
+    "<span class="hljs-attribute">certainty</span>": <span class="hljs-value"><span class="hljs-string">"almost_certain"</span></span>,
+    "<span class="hljs-attribute">algorithm</span>": <span class="hljs-value"><span class="hljs-string">"alpha"</span></span>,
+    "<span class="hljs-attribute">metadata</span>": <span class="hljs-value"><span class="hljs-literal">null</span></span>,
+    "<span class="hljs-attribute">soundscape</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">url</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/soundscapes/52705eef883bf9f7e3f19bb36fbee9c2"</span></span>,
+      "<span class="hljs-attribute">startTime</span>": <span class="hljs-value"><span class="hljs-number">26</span></span>,
+      "<span class="hljs-attribute">endTime</span>": <span class="hljs-value"><span class="hljs-number">29</span></span>,
+      "<span class="hljs-attribute">mode</span>": <span class="hljs-value"><span class="hljs-string">"live"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response  <code>404</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">success</span>": <span class="hljs-value"><span class="hljs-literal">false</span></span>,
+  "<span class="hljs-attribute">message</span>": <span class="hljs-value"><span class="hljs-string">"Invalid detection ID"</span>
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div></section><section class="resource-group" id="soundscapes"><h2 class="group-heading">Soundscapes <a class="permalink" href="#soundscapes">¶</a></h2><div class="resource" id="soundscapes-soundscapes"><h3 class="resource-heading">Soundscapes <a class="permalink" href="#soundscapes-soundscapes"> ¶</a></h3><p>These endpoints require authentication with a station auth token.</p>
+<div class="action post" id="soundscapes-soundscapes-post"><h4 class="action-heading"><div class="name">Upload Soundscape</div><a class="method post" href="#soundscapes-soundscapes-post">POST</a><code class="uri">/api/v1/stations/{token}/soundscapes{?timestamp}</code></h4><p>Uploads an audio file which can then be associated with a posted detection.</p>
+<p>The audio file should be submitted as the POST body with the <code>timestamp</code> specified as a query parameter in the URL in ISO8601 format.</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span> <span class="uri"><span class="hostname"></span>/api/v1/stations/<span class="hljs-attribute" title="token">token</span>/soundscapes?<span class="hljs-attribute">timestamp=</span><span class="hljs-literal">2022-04-27T23:41:37.212-07:00</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>token</dt><dd><code>string</code> <span class="required">(required)</span> <p>Station authentication token</p>
+</dd><dt>timestamp</dt><dd><code>string</code> <span class="required">(required)</span> <span class="text-muted example"><strong>Example: </strong><span>2022-04-27T23:41:37.212-07:00</span></span><p>The timestamp of the start of the soundscape, in ISO8601 format</p>
+</dd></dl></div><div class="title"><strong>Response  <code>201</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">success</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+  "<span class="hljs-attribute">soundscape</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">12345</span></span>,
+    "<span class="hljs-attribute">stationId</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+    "<span class="hljs-attribute">duration</span>": <span class="hljs-value"><span class="hljs-number">3</span></span>,
+    "<span class="hljs-attribute">filesize</span>": <span class="hljs-value"><span class="hljs-number">85444</span></span>,
+    "<span class="hljs-attribute">sampleRate</span>": <span class="hljs-value"><span class="hljs-number">48000</span></span>,
+    "<span class="hljs-attribute">timestamp</span>": <span class="hljs-value"><span class="hljs-string">"2022-04-27T23:41:37.212-07:00"</span></span>,
+    "<span class="hljs-attribute">mode</span>": <span class="hljs-value"><span class="hljs-string">"live"</span></span>,
+    "<span class="hljs-attribute">url</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/soundscapes/4de6d017c348f716959751efdf9e897c"</span>
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div><div class="action get" id="soundscapes-soundscapes-get"><h4 class="action-heading"><div class="name">List Soundscapes</div><a class="method get" href="#soundscapes-soundscapes-get">GET</a><code class="uri">/api/v1/stations/{token}/soundscapes</code></h4><p>Lists all soundscapes associated with this station in timestamp descending order.</p>
+<p>Parameters should be provided as query parameters. Pagination is cursor-based using limit/offset params.</p>
+<h4>Example URI</h4><div class="definition"><span class="method get">GET</span> <span class="uri"><span class="hostname"></span>/api/v1/stations/<span class="hljs-attribute" title="token">token</span>/soundscapes</span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>token</dt><dd><code>string</code> <span class="required">(required)</span> <p>Station authentication token</p>
+</dd><dt>limit</dt><dd><code>integer</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>10</span></span><p>The maximum number of soundscapes to return (max 100, default: 100).</p>
+</dd><dt>cursor</dt><dd><code>integer</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>12345</span></span><p>The ID of the last soundscape to begin pagination from.</p>
+</dd><dt>from</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>2023-06-18</span></span><p>The timestamp in ISO8601 format to filter soundscapes from (inclusive).</p>
+</dd><dt>to</dt><dd><code>string</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>2023-07-05</span></span><p>The timestamp in ISO8601 format to filter soundscapes to (inclusive).</p>
+</dd><dt>speciesId</dt><dd><code>integer</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>305</span></span><p>List only soundscapes with detections for the given species.</p>
+</dd><dt>detections</dt><dd><code>boolean</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>true</span></span><p>Optionally include soundscape detections in JSON response (default: false).</p>
+</dd></dl></div><div class="title"><strong>Response  <code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">success</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+  "<span class="hljs-attribute">soundscapes</span>": <span class="hljs-value">[
+    {
+      "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">12345</span></span>,
+      "<span class="hljs-attribute">stationId</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+      "<span class="hljs-attribute">duration</span>": <span class="hljs-value"><span class="hljs-number">3</span></span>,
+      "<span class="hljs-attribute">filesize</span>": <span class="hljs-value"><span class="hljs-number">85444</span></span>,
+      "<span class="hljs-attribute">sampleRate</span>": <span class="hljs-value"><span class="hljs-number">48000</span></span>,
+      "<span class="hljs-attribute">timestamp</span>": <span class="hljs-value"><span class="hljs-string">"2022-04-27T23:41:37.212-07:00"</span></span>,
+      "<span class="hljs-attribute">mode</span>": <span class="hljs-value"><span class="hljs-string">"live"</span></span>,
+      "<span class="hljs-attribute">url</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/soundscapes/4de6d017c348f716959751efdf9e897c"</span>
+    </span>}
+  ]
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div class="resource" id="soundscapes-soundscape"><h3 class="resource-heading">Soundscape <a class="permalink" href="#soundscapes-soundscape"> ¶</a></h3><p>These endpoints require authentication with a station auth token.</p>
+<div class="action get" id="soundscapes-soundscape-get"><h4 class="action-heading"><div class="name">Soundscape Info</div><a class="method get" href="#soundscapes-soundscape-get">GET</a><code class="uri">/api/v1/stations/{token}/soundscapes/{id}{?detections}</code></h4><p>Retrieves information for the soundscape with the given ID.</p>
+<h4>Example URI</h4><div class="definition"><span class="method get">GET</span> <span class="uri"><span class="hostname"></span>/api/v1/stations/<span class="hljs-attribute" title="token">token</span>/soundscapes/<span class="hljs-attribute" title="id">12345</span>?<span class="hljs-attribute">detections=</span><span class="hljs-literal">true</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>token</dt><dd><code>string</code> <span class="required">(required)</span> <p>Station authentication token</p>
+</dd><dt>id</dt><dd><code>integer</code> <span class="required">(required)</span> <span class="text-muted example"><strong>Example: </strong><span>12345</span></span><p>Soundscape ID.</p>
+</dd><dt>detections</dt><dd><code>boolean</code> <span>(optional)</span> <span class="text-muted example"><strong>Example: </strong><span>true</span></span><p>Optionally include soundscape detections in JSON response (default: false).</p>
+</dd></dl></div><div class="title"><strong>Response  <code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">success</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+  "<span class="hljs-attribute">soundscape</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">12345</span></span>,
+    "<span class="hljs-attribute">stationId</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+    "<span class="hljs-attribute">duration</span>": <span class="hljs-value"><span class="hljs-number">3</span></span>,
+    "<span class="hljs-attribute">filesize</span>": <span class="hljs-value"><span class="hljs-number">85444</span></span>,
+    "<span class="hljs-attribute">sampleRate</span>": <span class="hljs-value"><span class="hljs-number">48000</span></span>,
+    "<span class="hljs-attribute">timestamp</span>": <span class="hljs-value"><span class="hljs-string">"2022-04-27T23:41:37.212-07:00"</span></span>,
+    "<span class="hljs-attribute">mode</span>": <span class="hljs-value"><span class="hljs-string">"live"</span></span>,
+    "<span class="hljs-attribute">url</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/soundscapes/4de6d017c348f716959751efdf9e897c"</span>
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div></section><section class="resource-group" id="species"><h2 class="group-heading">Species <a class="permalink" href="#species">¶</a></h2><div class="resource" id="species-species"><h3 class="resource-heading">Species <a class="permalink" href="#species-species"> ¶</a></h3><div class="action get" id="species-species-get"><h4 class="action-heading"><div class="name">Lookup Species Info</div><a class="method get" href="#species-species-get">GET</a><code class="uri">/api/v1/species/{id}</code></h4><h4>Example URI</h4><div class="definition"><span class="method get">GET</span> <span class="uri"><span class="hostname"></span>/api/v1/species/<span class="hljs-attribute" title="id">1</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>id</dt><dd><code>integer</code> <span class="required">(required)</span> <span class="text-muted example"><strong>Example: </strong><span>1</span></span><p>Species ID.</p>
+</dd></dl></div><div class="title"><strong>Response  <code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">success</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+  "<span class="hljs-attribute">species</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+    "<span class="hljs-attribute">commonName</span>": <span class="hljs-value"><span class="hljs-string">"House Sparrow"</span></span>,
+    "<span class="hljs-attribute">scientificName</span>": <span class="hljs-value"><span class="hljs-string">"Passer domesticus"</span></span>,
+    "<span class="hljs-attribute">color</span>": <span class="hljs-value"><span class="hljs-string">"#d16ff8"</span></span>,
+    "<span class="hljs-attribute">classification</span>": <span class="hljs-value"><span class="hljs-string">"avian"</span></span>,
+    "<span class="hljs-attribute">imageUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/species/1/HouseSparrow-standard-b861184cf45c092cdb45fd689dd676ef.jpg"</span></span>,
+    "<span class="hljs-attribute">thumbnailUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/species/1/HouseSparrow-thumbnail-e9cbc91763a1579de8ef04880678b5e3.jpg"</span></span>,
+    "<span class="hljs-attribute">wikipediaUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://en.wikipedia.org/wiki/House_sparrow"</span></span>,
+    "<span class="hljs-attribute">wikipediaSummary</span>": <span class="hljs-value"><span class="hljs-string">"The house sparrow (Passer domesticus) is a bird of the sparrow family Passeridae, found in most parts of the world. It is a small bird that has a typical length of 16 cm (6.3 in) and a mass of 24–39.5 g (0.85–1.39 oz). Females and young birds are coloured pale brown and grey, and males have brighter black, white, and brown markings. One of about 25 species in the genus Passer, the house sparrow is native to most of Europe, the Mediterranean Basin, and a large part of Asia. Its intentional or accidental introductions to many regions, including parts of Australasia, Africa, and the Americas, make it the most widely distributed wild bird.\nThe house sparrow is strongly associated with human habitation, and can live in urban or rural settings. Though found in widely varied habitats and climates, it typically avoids extensive woodlands, grasslands, and deserts away from human development. It feeds mostly on the seeds of grains and weeds, but it is an opportunistic eater and commonly eats insects and many other foods. Its predators include domestic cats, hawks, and many other predatory birds and mammals.\nBecause of its numbers, ubiquity, and association with human settlements, the house sparrow is culturally prominent. It is extensively, and usually unsuccessfully, persecuted as an agricultural pest. It has also often been kept as a pet, as well as being a food item and a symbol of lust, sexual potency, commonness, and vulgarity. Though it is widespread and abundant, its numbers have declined in some areas. The animal's conservation status is listed as least concern on the IUCN Red List."</span></span>,
+    "<span class="hljs-attribute">alpha</span>": <span class="hljs-value"><span class="hljs-string">"HOSP"</span></span>,
+    "<span class="hljs-attribute">alpha6</span>": <span class="hljs-value"><span class="hljs-string">"PASDOM"</span></span>,
+    "<span class="hljs-attribute">ebirdCode</span>": <span class="hljs-value"><span class="hljs-string">"houspa"</span></span>,
+    "<span class="hljs-attribute">ebirdUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://ebird.org/species/houspa"</span></span>,
+    "<span class="hljs-attribute">imageCredit</span>": <span class="hljs-value"><span class="hljs-string">"Adamo"</span></span>,
+    "<span class="hljs-attribute">imageCreditHtml</span>": <span class="hljs-value"><span class="hljs-string">"&lt;a rel=\"nofollow\" class=\"external text\" href=\"http://www.piqs.de/user/Adamo/\"&gt;Adamo&lt;/a&gt;"</span></span>,
+    "<span class="hljs-attribute">imageLicense</span>": <span class="hljs-value"><span class="hljs-string">"CC BY 2.0 de"</span></span>,
+    "<span class="hljs-attribute">imageLicenseUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://creativecommons.org/licenses/by/2.0/de/deed.en"</span>
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div class="resource" id="species-lookup-multiple-species"><h3 class="resource-heading">Lookup Multiple Species <a class="permalink" href="#species-lookup-multiple-species"> ¶</a></h3><div class="action post" id="species-lookup-multiple-species-post"><h4 class="action-heading"><div class="name">Lookup Multiple Species</div><a class="method post" href="#species-lookup-multiple-species-post">POST</a><code class="uri">/api/v1/species/lookup</code></h4><ul>
+<li>
+<p>species (array) - Array of BirdNET identifiers (Scientific Name_Common Name) to look up.</p>
+</li>
+<li>
+<p>fields (array) - Array of species fields to include. Leave blank to include all.</p>
+</li>
+</ul>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span> <span class="uri"><span class="hostname"></span>/api/v1/species/lookup</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">species</span>": <span class="hljs-value">[
+    <span class="hljs-string">"Passer domesticus_House Sparrow"</span>
+  ]
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response  <code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">success</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+  "<span class="hljs-attribute">species</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">Passer domesticus_House Sparrow</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+      "<span class="hljs-attribute">commonName</span>": <span class="hljs-value"><span class="hljs-string">"House Sparrow"</span></span>,
+      "<span class="hljs-attribute">scientificName</span>": <span class="hljs-value"><span class="hljs-string">"Passer domesticus"</span></span>,
+      "<span class="hljs-attribute">color</span>": <span class="hljs-value"><span class="hljs-string">"#d16ff8"</span></span>,
+      "<span class="hljs-attribute">classification</span>": <span class="hljs-value"><span class="hljs-string">"avian"</span></span>,
+      "<span class="hljs-attribute">imageUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/species/1/HouseSparrow-standard-b861184cf45c092cdb45fd689dd676ef.jpg"</span></span>,
+      "<span class="hljs-attribute">thumbnailUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://media.birdweather.com/species/1/HouseSparrow-thumbnail-e9cbc91763a1579de8ef04880678b5e3.jpg"</span></span>,
+      "<span class="hljs-attribute">wikipediaUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://en.wikipedia.org/wiki/House_sparrow"</span></span>,
+      "<span class="hljs-attribute">wikipediaSummary</span>": <span class="hljs-value"><span class="hljs-string">"The house sparrow (Passer domesticus) is a bird of the sparrow family Passeridae, found in most parts of the world. It is a small bird that has a typical length of 16 cm (6.3 in) and a mass of 24–39.5 g (0.85–1.39 oz). Females and young birds are coloured pale brown and grey, and males have brighter black, white, and brown markings. One of about 25 species in the genus Passer, the house sparrow is native to most of Europe, the Mediterranean Basin, and a large part of Asia. Its intentional or accidental introductions to many regions, including parts of Australasia, Africa, and the Americas, make it the most widely distributed wild bird.\nThe house sparrow is strongly associated with human habitation, and can live in urban or rural settings. Though found in widely varied habitats and climates, it typically avoids extensive woodlands, grasslands, and deserts away from human development. It feeds mostly on the seeds of grains and weeds, but it is an opportunistic eater and commonly eats insects and many other foods. Its predators include domestic cats, hawks, and many other predatory birds and mammals.\nBecause of its numbers, ubiquity, and association with human settlements, the house sparrow is culturally prominent. It is extensively, and usually unsuccessfully, persecuted as an agricultural pest. It has also often been kept as a pet, as well as being a food item and a symbol of lust, sexual potency, commonness, and vulgarity. Though it is widespread and abundant, its numbers have declined in some areas. The animal's conservation status is listed as least concern on the IUCN Red List."</span></span>,
+      "<span class="hljs-attribute">alpha</span>": <span class="hljs-value"><span class="hljs-string">"HOSP"</span></span>,
+      "<span class="hljs-attribute">alpha6</span>": <span class="hljs-value"><span class="hljs-string">"PASDOM"</span></span>,
+      "<span class="hljs-attribute">ebirdCode</span>": <span class="hljs-value"><span class="hljs-string">"houspa"</span></span>,
+      "<span class="hljs-attribute">ebirdUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://ebird.org/species/houspa"</span></span>,
+      "<span class="hljs-attribute">imageCredit</span>": <span class="hljs-value"><span class="hljs-string">"Adamo"</span></span>,
+      "<span class="hljs-attribute">imageCreditHtml</span>": <span class="hljs-value"><span class="hljs-string">"&lt;a rel=\"nofollow\" class=\"external text\" href=\"http://www.piqs.de/user/Adamo/\"&gt;Adamo&lt;/a&gt;"</span></span>,
+      "<span class="hljs-attribute">imageLicense</span>": <span class="hljs-value"><span class="hljs-string">"CC BY 2.0 de"</span></span>,
+      "<span class="hljs-attribute">imageLicenseUrl</span>": <span class="hljs-value"><span class="hljs-string">"https://creativecommons.org/licenses/by/2.0/de/deed.en"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div></section><section class="resource-group" id="station-configuration"><h2 class="group-heading">Station Configuration <a class="permalink" href="#station-configuration">¶</a></h2><div class="resource" id="station-configuration-station-configuration"><h3 class="resource-heading">Station Configuration <a class="permalink" href="#station-configuration-station-configuration"> ¶</a></h3><div class="action post" id="station-configuration-station-configuration-post"><h4 class="action-heading"><div class="name">Update Station Config</div><a class="method post" href="#station-configuration-station-configuration-post">POST</a><code class="uri">/api/v1/stations/{token}/config</code></h4><p>Updates the configuration for the given station.</p>
+<ul>
+<li>
+<p>name (string) - The new name for the station.</p>
+</li>
+<li>
+<p>locationPrivacy (boolean) - Toggle location privacy.</p>
+</li>
+<li>
+<p>minConfidence (float) - Set minimum confidence for a valid detection (0.35 … 1.0).</p>
+</li>
+<li>
+<p>minProbability (float) - Set minimum probability for a valid detection (0.0 … 1.0).</p>
+</li>
+<li>
+<p>minScore (float) - Set minimum score for a valid detection (0.0 … 10.0).</p>
+</li>
+<li>
+<p>minHumanConfidence (float) - Set minimum confidence for flagging human detections (0.01 … 0.25) [default: 0.04]. A lower value is more sensitive and will result in more soundscapes being auto-purged.</p>
+</li>
+</ul>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span> <span class="uri"><span class="hostname"></span>/api/v1/stations/<span class="hljs-attribute" title="token">token</span>/config</span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>token</dt><dd><code>string</code> <span class="required">(required)</span> <p>Station authentication token</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">name</span>": <span class="hljs-value"><span class="hljs-string">"New Station Name"</span></span>,
+  "<span class="hljs-attribute">locationPrivacy</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+  "<span class="hljs-attribute">minConfidence</span>": <span class="hljs-value"><span class="hljs-number">0.45</span></span>,
+  "<span class="hljs-attribute">minProbability</span>": <span class="hljs-value"><span class="hljs-number">0.2</span></span>,
+  "<span class="hljs-attribute">minScore</span>": <span class="hljs-value"><span class="hljs-number">4.8</span></span>,
+  "<span class="hljs-attribute">minHumanConfidence</span>": <span class="hljs-value"><span class="hljs-number">0.05</span>
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response  <code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">success</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+    "<span class="hljs-attribute">station</span>": <span class="hljs-value">{
+        "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">12345</span></span>,
+        "<span class="hljs-attribute">name</span>": <span class="hljs-value"><span class="hljs-string">"New Station Name"</span></span>,
+        "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"birdnetpi"</span></span>,
+        "<span class="hljs-attribute">timezone</span>": <span class="hljs-value"><span class="hljs-literal">null</span></span>,
+        "<span class="hljs-attribute">latestDetectionAt</span>": <span class="hljs-value"><span class="hljs-literal">null</span></span>,
+        "<span class="hljs-attribute">latestValidDetectionAt</span>": <span class="hljs-value"><span class="hljs-literal">null</span></span>,
+        "<span class="hljs-attribute">locationPrivacy</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+        "<span class="hljs-attribute">minConfidence</span>": <span class="hljs-value"><span class="hljs-number">045</span></span>,
+        "<span class="hljs-attribute">minProbability</span>": <span class="hljs-value"><span class="hljs-number">0.2</span></span>,
+        "<span class="hljs-attribute">minScore</span>": <span class="hljs-value"><span class="hljs-number">4.8</span></span>,
+        "<span class="hljs-attribute">minHumanConfidence</span>": <span class="hljs-value"><span class="hljs-number">0.05</span>
+    </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response  <code>422</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">success</span>": <span class="hljs-value"><span class="hljs-literal">false</span>
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div></section></div></div></div><p class="text-muted" style="text-align: center;">Generated by <a class="aglio" href="https://github.com/danielgtaylor/aglio">aglio</a> on 13 Nov 2026</p></body></html>

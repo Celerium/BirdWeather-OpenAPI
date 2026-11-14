@@ -1,0 +1,66 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Mini</title></head><body><div class="container"><div class="content"><header><h1 id="top">Mini</h1></header>
+<p>This is the documentation for V2 of the Mini API.</p>
+<ul>
+<li><strong>Production:</strong> <a href="https://example.test/api/v2">https://example.test/api/v2</a></li>
+</ul>
+<p>For support, please contact <a href="mailto:help@example.test">help@example.test</a>.</p>
+<section id="birds" class="resource-group"><h2 class="group-heading">Birds <a href="#birds" class="permalink">&para;</a></h2><div id="birds-birds" class="resource"><h3 class="resource-heading">Birds <a href="#birds-birds" class="permalink">&nbsp;&para;</a></h3><p>These endpoints require authentication with a station auth token.</p>
+<div id="birds-birds-get" class="action get"><h4 class="action-heading"><div class="name">List Birds</div><a href="#birds-birds-get" class="method get">GET</a><code class="uri">/api/v2/stations/{token}/birds{?limit,mode,extra}</code></h4><p>Lists birds with <code>limit</code>.</p>
+<h4>Example URI</h4><div class="definition"><span class="method get">GET</span>&nbsp;<span class="uri">/api/v2/stations/token/birds</span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>token</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>Station authentication token</p>
+</dd><dt>limit</dt><dd><code>integer</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>10</span></span><p>Maximum number of birds (max 50, default: 10).</p>
+</dd><dt>mode</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>live</span></span><p>Limit to a mode [live / recorded].</p>
+</dd></dl></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code>Content-Type: application/json</code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "success": true,
+  "birds": [
+    {
+      "id": 1,
+      "name": "Jay",
+      "seenAt": "2022-11-17T16:48:10.986-08:00",
+      "note": null
+    }
+  ]
+}</code></pre></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code>Content-Type: application/json</code></pre><h5>Body</h5><pre><code>{
+    "success": true,
+    "birds": [],
+    "fallback": [
+        {
+            ...
+        }
+    ]
+}</code></pre></div></div></div>
+<div id="birds-birds-post" class="action post"><h4 class="action-heading"><div class="name">Add Bird</div><a href="#birds-birds-post" class="method post">POST</a><code class="uri">/api/v2/stations/{token}/birds</code></h4><p>Adds a bird.</p>
+<ul>
+<li><p>name (string, required) - The bird’s name.</p></li>
+<li><p>weight (float) - Weight in kilograms (0.1 … 9.5).</p></li>
+<li><p>tags (array) - Free-form tags.</p></li>
+</ul>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri">/api/v2/stations/token/birds</span></div><div class="title"><strong>URI Parameters</strong></div><div class="collapse-content"><dl class="inner"><dt>token</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>Station authentication token.</p>
+</dd></dl></div><div class="title"><strong>Request</strong></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code>Content-Type: application/json</code></pre><h5>Body</h5><pre><code>{
+  "name": "Jay",
+  "weight": 045,
+  "tags": [
+    "blue"
+  ]
+}</code></pre></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>201</code></strong></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code>Content-Type: application/json</code></pre><h5>Body</h5><pre><code>{
+  "success": true
+}</code></pre></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>422</code></strong></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{
+  "success": false,
+  "errors": {
+    "name": [
+      "can't be blank"
+    ]
+  }
+}</code></pre></div></div></div></div>
+<div id="birds-bird" class="resource"><h3 class="resource-heading">Bird <a href="#birds-bird" class="permalink">&para;</a></h3>
+<div id="birds-bird-get" class="action get"><h4 class="action-heading"><div class="name">Info</div><a href="#birds-bird-get" class="method get">GET</a><code class="uri">/api/v2/stations/{token}/birds/{id}</code></h4><div class="title"><strong>URI Parameters</strong></div><div class="collapse-content"><dl class="inner"><dt>token</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>Token</p>
+</dd><dt>id</dt><dd><code>integer</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>Bird ID</p>
+</dd></dl></div></div></div>
+<div id="birds-global" class="resource"><h3 class="resource-heading">Global Bird <a href="#birds-global" class="permalink">&para;</a></h3>
+<div id="birds-global-get" class="action get"><h4 class="action-heading"><div class="name">Info</div><a href="#birds-global-get" class="method get">GET</a><code class="uri">/api/v2/birds/{id}</code></h4><div class="title"><strong>Response&nbsp;&nbsp;<code>404</code></strong></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{ "success": false }</code></pre></div></div></div></div>
+</section>
+<section id="audio" class="resource-group"><h2 class="group-heading">Audio <a href="#audio" class="permalink">&para;</a></h2><div id="audio-audio" class="resource"><h3 class="resource-heading">Audio <a href="#audio-audio" class="permalink">&para;</a></h3>
+<div id="audio-audio-post" class="action post"><h4 class="action-heading"><div class="name">Upload Audio</div><a href="#audio-audio-post" class="method post">POST</a><code class="uri">/api/v2/stations/{token}/audio{?timestamp}</code></h4><p>The audio file should be submitted as the POST body.</p>
+<div class="title"><strong>URI Parameters</strong></div><div class="collapse-content"><dl class="inner"><dt>token</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>Token</p>
+</dd><dt>timestamp</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>Start time</p>
+</dd></dl></div></div></div></section>
+</div></div></body></html>
